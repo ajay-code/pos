@@ -1,20 +1,38 @@
-import { config } from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import createError, { HttpError } from "http-errors";
+import mongoose from "mongoose";
 import logger from "morgan";
 import passport from "passport";
 import path from "path";
+import passportJwt from "./auth/jwt";
+import { DB_URL } from "./config/env";
 import apiRouter from "./routes/api/index";
 import indexRouter from "./routes/index";
 
 const app = express();
-config();
+
+// connect to the database
+const MONGO_URL = DB_URL;
+
+mongoose
+  .connect(MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  })
+  .then(() => {
+    console.log("connected to database");
+  })
+  .catch((err) => console.error(err));
+
+passportJwt(passport);
 
 // view engine setup
 if (process.env.NODE_ENV === "development") {
   const cors = require("cors");
   app.use(cors());
 }
+
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 

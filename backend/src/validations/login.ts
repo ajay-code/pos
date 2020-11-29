@@ -1,8 +1,8 @@
-import Joi, { object } from "joi";
+import { object, string } from "yup";
 
-const Schema = object({
-  email: Joi.string().email({ minDomainSegments: 2 }),
-  password: Joi.string().pattern(/^[a-zA-Z0-9]{6,30}$/),
+const loginSchema = object({
+  email: string().email().required(),
+  password: string().min(4).required(),
 });
 
-export default Schema;
+export default loginSchema;
